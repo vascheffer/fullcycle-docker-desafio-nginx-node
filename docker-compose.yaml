@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+
+  nginx:
+      build:
+          context: nginx
+      container_name: nginx
+      restart: always
+      networks:
+          - nginx-proxy
+      ports:
+          - "8080:80"
+
+  node:
+    build:
+      context: ./node
+    container_name: node
+    restart: always
+    networks:
+      - nginx-proxy
+    depends_on: 
+       - db
+
+  db:
+    build: 
+      context: ./mysql
+    container_name: db
+    restart: always
+    networks:
+      - nginx-proxy
+    environment:
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=root
+
+networks:
+  nginx-proxy:
+    driver: bridge
